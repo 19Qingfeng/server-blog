@@ -2,6 +2,12 @@ const handlerBolgRouter = require("./src/router/blog.js")
 const handleUserRouter = require("./src/router/user.js")
 
 
+/* 
+  app.js只处理入口 各个路由单独使用func处理
+  各个路由页面关心路由返回的数据 并不关心res.end等等之类的 
+  只返回数据 而app.js处理 请求和返回
+  总结：app.js处理请求和响应，各个router处理各自路由的返回数据。
+*/ 
 
 const serverHanlder = (req,res) => {
   // 返回格式
