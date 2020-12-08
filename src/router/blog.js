@@ -1,4 +1,4 @@
-const { getList } = require("../controller/blog")
+const { getList , getDetail } = require("../controller/blog")
 const { SucessModel } = require("../model/resModel")
 const handlerBlogRouter = (req,res) => {
   const method = req.method.toLowerCase()
@@ -13,14 +13,13 @@ const handlerBlogRouter = (req,res) => {
 
   // 获取博客详情
   if(method === 'get' && path === '/api/blog/detail') {
-    return {
-      msg:'获取博客详情'
-    }
+    const { id } = req.query
+    return new SucessModel(getDetail(id))
   }
 
   // 新建博客
   if(method === 'post' && path === '/api/blog/new') {
-
+   
   }
 
   // 更新博客
