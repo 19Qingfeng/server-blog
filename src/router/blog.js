@@ -1,12 +1,14 @@
+const { getList } = require("../controller/blog")
+const { SucessModel } = require("../model/resModel")
 const handlerBlogRouter = (req,res) => {
   const method = req.method.toLowerCase()
   const path = req.path
 
   // 获取博客列表
   if(method === 'get' && path === '/api/blog/list') {
-    return {
-      msg:'这是博客列表'
-    }
+    const { author='', keyword='' } = req.query
+    const listData = getList(author,keyword)
+    return new SucessModel(listData)
   }
 
   // 获取博客详情

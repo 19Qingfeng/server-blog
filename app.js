@@ -1,9 +1,10 @@
 const handlerBolgRouter = require("./src/router/blog.js")
 const handleUserRouter = require("./src/router/user.js")
+const queryString = require('querystring')
 
 
 /* 
-  app.js只处理入口 各个路由单独使用func处理
+  app.js只处理入口(公共参数和公共逻辑) 各个路由单独使用func处理(关注各自数据)
   各个路由页面关心路由返回的数据 并不关心res.end等等之类的 
   只返回数据 而app.js处理 请求和返回
   总结：app.js处理请求和响应，各个router处理各自路由的返回数据。
@@ -17,6 +18,9 @@ const serverHanlder = (req,res) => {
   const url = req.url
   // req添加path属性 每个router文件直接使用
   req.path = url.split('?')[0]
+
+  // 解析query
+  req.query = queryString.parse(url.split('?')[1]) 
 
   // 处理blog路由
   const blogData = handlerBolgRouter(req,res)
