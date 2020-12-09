@@ -1,5 +1,6 @@
 const handlerBolgRouter = require("./src/router/blog.js");
 const handleUserRouter = require("./src/router/user.js");
+const { normazilerHeader } = require("./src/helpers/utils")
 const queryString = require("querystring");
 const { resolve } = require("path");
 
@@ -11,12 +12,14 @@ const { resolve } = require("path");
 */
 
 const getPostData = (req) => {
-  return new Promise((res, rej) => {
-    if (req.method !== "post") {
+  return new Promise((resolve, reject) => {
+    normazilerHeader(req.headers,'Content-Type')
+    if (req.method.toLowerCase() !== "post") {
       resolve({});
       return;
     }
-    if (req.header["Content-type"] !== "application/json") {
+
+    if (req.headers["Content-Type"] !== 'application/json;charset=utf-8;') {
       resolve({});
       return;
     }

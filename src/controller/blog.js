@@ -28,7 +28,19 @@ const getDetail = (id) => {
   }
 }
 
+const newBlog = (blogData = {}) => {
+  return {
+    id:3, // 新建博客插入到数据表中的id返回给前端
+  }
+}
+
+const updateBlog = (id,data = {}) => {
+  return true
+}
+
 module.exports = {
   getList,
-  getDetail
+  getDetail,
+  newBlog,
+  updateBlog
 }
