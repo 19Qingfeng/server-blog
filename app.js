@@ -49,6 +49,16 @@ const serverHanlder = (req, res) => {
   // 解析query
   req.query = queryString.parse(url.split("?")[1]);
 
+  // 解析cookie
+  const cookie = {};
+  const cookieStr = req.headers.cookie || '';
+  cookieStr.split(";").forEach((item) => {
+    if (!item) return;
+    const [key, value] = item.split("=");
+    cookie[key] = value;
+  });
+  req.cookie = cookie
+
   getPostData(req).then((postData) => {
     // 获得postData
     req.body = postData;
@@ -67,9 +77,9 @@ const serverHanlder = (req, res) => {
     const userData = handleUserRouter(req, res);
 
     if (userData) {
-      userData.then(data => {
+      userData.then((data) => {
         res.end(JSON.stringify(data));
-      })
+      });
       return;
     }
 
