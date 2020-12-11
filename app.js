@@ -1,6 +1,6 @@
-const handlerBolgRouter = require("./src/router/blog.js");
+const handlerBlogRouter = require("./src/router/blog.js");
 const handleUserRouter = require("./src/router/user.js");
-const { normazilerHeader } = require("./src/helpers/utils")
+const { normazilerHeader } = require("./src/helpers/utils");
 const queryString = require("querystring");
 const { resolve } = require("path");
 
@@ -13,13 +13,13 @@ const { resolve } = require("path");
 
 const getPostData = (req) => {
   return new Promise((resolve, reject) => {
-    normazilerHeader(req.headers,'Content-Type')
+    normazilerHeader(req.headers, "Content-Type");
     if (req.method.toLowerCase() !== "post") {
       resolve({});
       return;
     }
 
-    if (req.headers["Content-Type"] !== 'application/json;charset=utf-8;') {
+    if (req.headers["Content-Type"] !== "application/json;charset=utf-8;") {
       resolve({});
       return;
     }
@@ -54,10 +54,13 @@ const serverHanlder = (req, res) => {
     req.body = postData;
 
     // 处理blog路由
-    const blogData = handlerBolgRouter(req, res);
-
-    if (blogData) {
-      res.end(JSON.stringify(blogData));
+    const blogResult = handlerBlogRouter(req, res);
+    if (blogResult) {
+      console.log(blogResult,'bogResult')
+      blogResult.then((blogData) => {
+        res.end(JSON.stringify(blogData));
+      });
+      // promise存在直接return
       return;
     }
 

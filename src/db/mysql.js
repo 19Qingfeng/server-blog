@@ -17,6 +17,8 @@ function exec(sql) {
   });
 }
 
+// con.end()
+
 module.exports = {
   exec,
 };
