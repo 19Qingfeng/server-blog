@@ -56,7 +56,6 @@ const serverHanlder = (req, res) => {
     // 处理blog路由
     const blogResult = handlerBlogRouter(req, res);
     if (blogResult) {
-      console.log(blogResult,'bogResult')
       blogResult.then((blogData) => {
         res.end(JSON.stringify(blogData));
       });

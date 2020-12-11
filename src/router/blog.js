@@ -38,19 +38,17 @@ const handlerBlogRouter = (req, res) => {
   // 更新博客
   if (method === "post" && path === "/api/blog/update") {
     const result = updateBlog(id, req.body);
-    const responseData = result
-      ? new SuccessModel()
-      : new ErrorModel("更新博客失败");
-    return responseData;
+    return result.then(boolean => {
+      return boolean ? new SuccessModel(true): new ErrorModel("更新博客失败");
+    })
   }
 
   // 删除博客
   if (method === "post" && path === "/api/blog/del") {
     const result = delBlog(id);
-    const responseData = result
-      ? new SuccessModel()
-      : new ErrorModel("删除博客失败");
-    return responseData;
+    return result.then(boolean => {
+      return boolean ? new SuccessModel(boolean) : new ErrorModel("删除失败")
+    })
   }
 };
 

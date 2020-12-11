@@ -37,12 +37,27 @@ const newBlog = (blogData = {}) => {
   });
 };
 
-const updateBlog = (id, data = {}) => {
-  return true;
+const updateBlog = (id, blogData = {}) => {
+  const { title, content } = blogData;
+  const date = Date.now()
+  let sql = `update blogs set title='${title}',content='${content}',createTime=${date} where id=${id}`;
+  return exec(sql).then(update => {
+      return !!update.affectedRows
+  })
 };
 
-const delBlog = (id) => {
-  return true;
+
+// 正常业务逻辑都是软删除 本质也就是更新status 下发数据时候根据status过滤 or 查询时候根据status查询
+// author假数据 只能删除自己的文章
+const delBlog = (id,author='wanghaoyu') => {
+  let sql = `delete from blogs where 1=1 and author='${author}' `
+  if(id) {
+    sql += `and id=${id} `
+  }
+  sql += `order by createTime desc;`
+  return exec(sql).then(result => {
+    return !!result.affectedRows
+  })
 };
 
 module.exports = {
