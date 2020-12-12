@@ -38,6 +38,15 @@ const getPostData = (req) => {
   });
 };
 
+/* 
+  注意下这里 理解不要出现误区
+  1. app.js中并没有被export的代码，可以理解为闭包。没有被导出的方法和变量在启动服务(代码run起来的时候)就已经创建，并且服务不终止那么这之中的变量如果不手动销毁那么就会一直保存在内存中。
+  2. serverHandler 这个函数是每次收到请求之后会执行的。所以serverHandler函数作用域是每次收到请求之后开始创建，等待请求完毕垃圾回收，serverHanlder中的内存变量会被释放。
+
+  举一个简单的比方:
+  1. 定义一个test变量，在app.js中并非在serverHanlder中的话。前一次请求去改变这个变量的值，后一次请求访问到的是改变之后的值。(缓存在了内存中)
+  2. 定义一个test变量，在app.js中同时也在serverHanlder中。前一次请求改变这个变量的值，后一次请求再次访问这个值，仍然是重新初始化的值。(请求结束函数作用域结束会销毁)
+*/
 const serverHanlder = (req, res) => {
   // 返回格式
   res.setHeader("Content-Type", "application/json;charset=utf-8;");
@@ -51,13 +60,13 @@ const serverHanlder = (req, res) => {
 
   // 解析cookie
   const cookie = {};
-  const cookieStr = req.headers.cookie || '';
+  const cookieStr = req.headers.cookie || "";
   cookieStr.split(";").forEach((item) => {
     if (!item) return;
     const [key, value] = item.split("=");
-    cookie[key] = value;
+    cookie[key.trim()] = value.trim();
   });
-  req.cookie = cookie
+  req.cookie = cookie;
 
   getPostData(req).then((postData) => {
     // 获得postData

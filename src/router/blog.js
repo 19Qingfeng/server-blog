@@ -6,6 +6,14 @@ const {
   delBlog,
 } = require("../controller/blog");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
+
+// 获取cookie过期时间
+const getCookieExpires = () => {
+  const d = new Date() // 获得当前时间
+  d.setTime(d.getTime() + (24 * 60 * 60 * 1000)) // 重新设置时间 设置到期时间
+  return d.toGMTString() // cookie规定的时间格式 GMTString
+}
+
 const handlerBlogRouter = (req, res) => {
   const method = req.method.toLowerCase();
   const path = req.path;
