@@ -3,6 +3,7 @@ const handleUserRouter = require("./src/router/user.js");
 const { normazilerHeader } = require("./src/helpers/utils");
 const queryString = require("querystring");
 const { resolve } = require("path");
+const { get, set } = require("./src/db/redis");
 
 /* 
   app.js只处理入口(公共参数和公共逻辑) 各个路由单独使用func处理(关注各自数据)
@@ -10,6 +11,13 @@ const { resolve } = require("path");
   只返回数据 而app.js处理 请求和返回
   总结：app.js处理请求和响应，各个router处理各自路由的返回数据。
 */
+
+// 设置cookie过期时间为一天
+const getCookieExpires = () => {
+  const d = new Date(); // 获得当前时间
+  d.setTime(d.getTime() + 24 * 60 * 60 * 1000); // 重新设置时间 设置到期时间
+  return d.toGMTString(); // cookie规定的时间格式 GMTString
+};
 
 const getPostData = (req) => {
   return new Promise((resolve, reject) => {
@@ -68,35 +76,71 @@ const serverHanlder = (req, res) => {
   });
   req.cookie = cookie;
 
-  getPostData(req).then((postData) => {
-    // 获得postData
-    req.body = postData;
+  // 解析session userId
+  let needSetCookie = false;
+  let userId = cookie.userId;
+  if (!userId) {
+    userId = `${Date.now()}_${Math.random()}`;
+    set(userId, {});
+    needSetCookie = true;
+  }
+  req.sessionId = userId;
 
-    // 处理blog路由
-    const blogResult = handlerBlogRouter(req, res);
-    if (blogResult) {
-      blogResult.then((blogData) => {
-        res.end(JSON.stringify(blogData));
-      });
-      // promise存在直接return
-      return;
+  Promise.all([get(req.sessionId), getPostData(req)]).then(
+    ([sessionData, postData]) => {
+      console.log(sessionData,'sessionData')
+      console.log(postData,'postData')
+      // 查询redis 获得用户信息
+      if (!sessionData) {
+        set(req.sessionId, {});
+        req.session = {};
+      } else {
+        req.session = sessionData;
+      }
+      console.log(req.session, "req.session");
+
+      // 获得postData
+      req.body = postData;
+
+      // 处理blog路由
+      const blogResult = handlerBlogRouter(req, res);
+      if (blogResult) {
+        blogResult.then((blogData) => {
+          if (needSetCookie) {
+            res.setHeader(
+              "Set-Cookie",
+              `userId=${req.sessionId}; path=/; httpOnly; expire=${getCookieExpires()};`
+            );
+          }
+          res.end(JSON.stringify(blogData));
+        });
+        // promise存在直接return
+        return;
+      }
+
+      // 处理userData
+      const userData = handleUserRouter(req, res);
+      console.log(userData,'userData')
+      if (userData) {
+        if (needSetCookie) {
+          // 千万注意cookie每个key=value;结束后有一个空格
+          res.setHeader(
+            "Set-Cookie",
+            `userId=${req.sessionId}; path=/; httpOnly; expire=${getCookieExpires()};`
+          );
+        }
+        userData.then((data) => {
+          res.end(JSON.stringify(data));
+        });
+        return;
+      }
+
+      // 未命中路由 返回404状态码 第二个参数为status描述 不传可重载
+      res.writeHead(404, { "Content-Type": "text/plain" }); // 改变状态码
+      res.write("404 Not find"); // 返回文本内容
+      res.end(); // 结束
     }
-
-    // 处理userData
-    const userData = handleUserRouter(req, res);
-
-    if (userData) {
-      userData.then((data) => {
-        res.end(JSON.stringify(data));
-      });
-      return;
-    }
-
-    // 未命中路由 返回404状态码 第二个参数为status描述 不传可重载
-    res.writeHead(404, { "Content-Type": "text/plain" }); // 改变状态码
-    res.write("404 Not find"); // 返回文本内容
-    res.end(); // 结束
-  });
+  );
 };
 
 module.exports = serverHanlder;
