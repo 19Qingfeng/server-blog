@@ -17,7 +17,8 @@ function exec(sql) {
   });
 }
 
-// con.end()
+// con.end() 注意nodejs中对于模块机制的缓存 所以这里的文件内是一个单例
+// 所以不能退出 Redis同理，如果退出的话那么就下次无法链接了 第二次引用这个文件只会执行exec但是mysql已经end关闭了。
 
 module.exports = {
   exec,

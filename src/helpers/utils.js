@@ -9,6 +9,11 @@ const normazilerHeader = (headers,normazilerName) => {
   })
 }
 
+const isPlainObject = (value) => {
+  return Object.prototype.toString(value) === '[object Object]'
+}
+
 module.exports = {
-  normazilerHeader
+  normazilerHeader,
+  isPlainObject
 }
