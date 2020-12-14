@@ -22,16 +22,6 @@ const handleUserRouter = (req, res) => {
       return new ErrorModel("用户名或密码不正确");
     });
   }
-
-  // 测试接口
-  // if (method === "get" && path === "/api/user/login-test") {
-  //   if (req.session.username) {
-  //     return new Promise((res) => {
-  //       res(new SuccessModel({ data: req.session }));
-  //     });
-  //   }
-  //   return Promise.resolve(new ErrorModel('暂未登陆'))
-  // }
 };
 
 module.exports = handleUserRouter;

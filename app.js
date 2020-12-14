@@ -2,7 +2,6 @@ const handlerBlogRouter = require("./src/router/blog.js");
 const handleUserRouter = require("./src/router/user.js");
 const { normazilerHeader } = require("./src/helpers/utils");
 const queryString = require("querystring");
-const { resolve } = require("path");
 const { get, set } = require("./src/db/redis");
 
 /* 
@@ -26,8 +25,7 @@ const getPostData = (req) => {
       resolve({});
       return;
     }
-
-    if (req.headers["Content-Type"] !== "application/json;charset=utf-8;") {
+    if (req.headers["Content-Type"] !== "application/json;charset=UTF-8") {
       resolve({});
       return;
     }
