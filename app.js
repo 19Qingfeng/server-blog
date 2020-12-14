@@ -88,8 +88,6 @@ const serverHanlder = (req, res) => {
 
   Promise.all([get(req.sessionId), getPostData(req)]).then(
     ([sessionData, postData]) => {
-      console.log(sessionData,'sessionData')
-      console.log(postData,'postData')
       // 查询redis 获得用户信息
       if (!sessionData) {
         set(req.sessionId, {});
@@ -97,7 +95,6 @@ const serverHanlder = (req, res) => {
       } else {
         req.session = sessionData;
       }
-      console.log(req.session, "req.session");
 
       // 获得postData
       req.body = postData;
@@ -109,7 +106,9 @@ const serverHanlder = (req, res) => {
           if (needSetCookie) {
             res.setHeader(
               "Set-Cookie",
-              `userId=${req.sessionId}; path=/; httpOnly; expire=${getCookieExpires()};`
+              `userId=${
+                req.sessionId
+              }; path=/; httpOnly; expire=${getCookieExpires()};`
             );
           }
           res.end(JSON.stringify(blogData));
@@ -120,13 +119,14 @@ const serverHanlder = (req, res) => {
 
       // 处理userData
       const userData = handleUserRouter(req, res);
-      console.log(userData,'userData')
       if (userData) {
         if (needSetCookie) {
           // 千万注意cookie每个key=value;结束后有一个空格
           res.setHeader(
             "Set-Cookie",
-            `userId=${req.sessionId}; path=/; httpOnly; expire=${getCookieExpires()};`
+            `userId=${
+              req.sessionId
+            }; path=/; httpOnly; expire=${getCookieExpires()};`
           );
         }
         userData.then((data) => {
@@ -135,10 +135,12 @@ const serverHanlder = (req, res) => {
         return;
       }
 
-      // 未命中路由 返回404状态码 第二个参数为status描述 不传可重载
-      res.writeHead(404, { "Content-Type": "text/plain" }); // 改变状态码
-      res.write("404 Not find"); // 返回文本内容
-      res.end(); // 结束
+      if (!req.expireLogin) {
+        // 未命中路由 返回404状态码 第二个参数为status描述 不传可重载
+        res.writeHead(404, { "Content-Type": "text/plain" }); // 改变状态码
+        res.write("404 Not find"); // 返回文本内容
+        res.end(); // 结束
+      }
     }
   );
 };

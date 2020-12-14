@@ -6,13 +6,14 @@ const {
   delBlog,
 } = require("../controller/blog");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
+const { loginCheck } = require("../middleware/loginCheck");
 
 // 获取cookie过期时间
 const getCookieExpires = () => {
-  const d = new Date() // 获得当前时间
-  d.setTime(d.getTime() + (24 * 60 * 60 * 1000)) // 重新设置时间 设置到期时间
-  return d.toGMTString() // cookie规定的时间格式 GMTString
-}
+  const d = new Date(); // 获得当前时间
+  d.setTime(d.getTime() + 24 * 60 * 60 * 1000); // 重新设置时间 设置到期时间
+  return d.toGMTString(); // cookie规定的时间格式 GMTString
+};
 
 const handlerBlogRouter = (req, res) => {
   const method = req.method.toLowerCase();
@@ -38,25 +39,29 @@ const handlerBlogRouter = (req, res) => {
 
   // 新建博客
   if (method === "post" && path === "/api/blog/new") {
+    if (loginCheck(req, res)) return;
     const blogData = req.body;
+    blogData.author = req.session.username;
     const result = newBlog(blogData);
     return result.then((data) => new SuccessModel(data));
   }
 
   // 更新博客
   if (method === "post" && path === "/api/blog/update") {
+    if (loginCheck(req, res)) return;
     const result = updateBlog(id, req.body);
-    return result.then(boolean => {
-      return boolean ? new SuccessModel(true): new ErrorModel("更新博客失败");
-    })
+    return result.then((boolean) => {
+      return boolean ? new SuccessModel(true) : new ErrorModel("更新博客失败");
+    });
   }
 
   // 删除博客
   if (method === "post" && path === "/api/blog/del") {
-    const result = delBlog(id);
-    return result.then(boolean => {
-      return boolean ? new SuccessModel(boolean) : new ErrorModel("删除失败")
-    })
+    if (loginCheck(req, res)) return;
+    const result = delBlog(id, req.session.username);
+    return result.then((boolean) => {
+      return boolean ? new SuccessModel(boolean) : new ErrorModel("删除失败");
+    });
   }
 };
 

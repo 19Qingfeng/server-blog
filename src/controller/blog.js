@@ -25,8 +25,7 @@ const getDetail = (id) => {
 
 const newBlog = (blogData = {}) => {
   /* 因为新建博客的时候前端是不用传递author的 新建一定是登陆的 所以这里暂时使用假数据 */
-  const mockAuth = "wanghaoyu";
-  const { author = mockAuth, title, content, createTime } = blogData;
+  const { author, title, content, createTime } = blogData;
   let sql = `
     insert into blogs (title,content,createTime,author) values (
       '${title}','${content}',${createTime},'${author}'
@@ -39,25 +38,24 @@ const newBlog = (blogData = {}) => {
 
 const updateBlog = (id, blogData = {}) => {
   const { title, content } = blogData;
-  const date = Date.now()
+  const date = Date.now();
   let sql = `update blogs set title='${title}',content='${content}',createTime=${date} where id=${id}`;
-  return exec(sql).then(update => {
-      return !!update.affectedRows
-  })
+  return exec(sql).then((update) => {
+    return !!update.affectedRows;
+  });
 };
-
 
 // 正常业务逻辑都是软删除 本质也就是更新status 下发数据时候根据status过滤 or 查询时候根据status查询
 // author假数据 只能删除自己的文章
-const delBlog = (id,author='wanghaoyu') => {
-  let sql = `delete from blogs where 1=1 and author='${author}' `
-  if(id) {
-    sql += `and id=${id} `
+const delBlog = (id, author) => {
+  let sql = `delete from blogs where 1=1 and author='${author}' `;
+  if (id) {
+    sql += `and id=${id} `;
   }
-  sql += `order by createTime desc;`
-  return exec(sql).then(result => {
-    return !!result.affectedRows
-  })
+  sql += `order by createTime desc;`;
+  return exec(sql).then((result) => {
+    return !!result.affectedRows;
+  });
 };
 
 module.exports = {

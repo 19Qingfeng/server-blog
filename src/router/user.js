@@ -7,9 +7,8 @@ const handleUserRouter = (req, res) => {
   const path = req.path;
 
   // 登陆接口
-  if (method === "get" && path === "/api/user/login") {
-    // const { username, password } = req.body;
-    const { username, password } = req.query;
+  if (method === "post" && path === "/api/user/login") {
+    const { username, password } = req.body;
     const result = login(username, password);
     return result.then((data) => {
       // 登陆成功之后 更新redis的值
@@ -25,15 +24,14 @@ const handleUserRouter = (req, res) => {
   }
 
   // 测试接口
-  if (method === "get" && path === "/api/user/login-test") {
-    console.log('进入')
-    if (req.session.username) {
-      return new Promise((res) => {
-        res(new SuccessModel({ data: req.session }));
-      });
-    }
-    return Promise.resolve(new ErrorModel('暂未登陆'))
-  }
+  // if (method === "get" && path === "/api/user/login-test") {
+  //   if (req.session.username) {
+  //     return new Promise((res) => {
+  //       res(new SuccessModel({ data: req.session }));
+  //     });
+  //   }
+  //   return Promise.resolve(new ErrorModel('暂未登陆'))
+  // }
 };
 
 module.exports = handleUserRouter;
