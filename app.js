@@ -1,5 +1,6 @@
 const handlerBlogRouter = require("./src/router/blog.js");
 const handleUserRouter = require("./src/router/user.js");
+const { access } = require('./src/helpers/logs')
 const { normazilerHeader } = require("./src/helpers/utils");
 const queryString = require("querystring");
 const { get, set } = require("./src/db/redis");
@@ -54,6 +55,10 @@ const getPostData = (req) => {
   2. 定义一个test变量，在app.js中同时也在serverHanlder中。前一次请求改变这个变量的值，后一次请求再次访问这个值，仍然是重新初始化的值。(请求结束函数作用域结束会销毁)
 */
 const serverHanlder = (req, res) => {
+  // 访问日志
+  access(`${req.method} --  ${req.url}  --  ${Date.now()} -- ${req.headers['user-agent']}`)
+
+
   // 返回格式
   res.setHeader("Content-Type", "application/json;charset=utf-8;");
 
