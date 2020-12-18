@@ -14,7 +14,7 @@ function md5(content) {
   // 获取实例16进制结果
   // digest 方法参数用于指定加密后的返回值的格式，不传参默认返回加密后的 Buffer，常用的参数有 hex 和 Base64，hex 代表十六进制，加密后长度为 32，Base64 的结果长度为 24，以 == 结尾。
   return md5.digest('hex');
-  // return md5.update(content).digest()
+  // return md5.update(content).digest('hex')
 }
 
 // 加密函数

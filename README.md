@@ -35,7 +35,7 @@ www.js (createServer) => app.js (res,req Format) => router (split router module 
 
 ### Nodejs 常见攻击防范
 
-1. sql 注入攻击。
+##### 1. sql 注入攻击。
 
 利用请求时携带的参数注入 sql 语句，比如
 
@@ -75,3 +75,16 @@ module.exports = {
 Tips:
 
 - sql 语句使用 scape()转译后，关键字比如 password，之前需要使用单引号`'password'`，现在就不需要了。
+
+
+##### 2. XSS攻击
+
+首先，XSS攻击前server和front都应该预防。
+
+攻击方式: 在页面嵌入js脚本获取网页信息。
+
+比方说: 博客系统中，用户注册，注册之后新建了一个博客。写入内容，内容中嵌入js脚本，展示的时候就会运行js脚本。如果别的用户看这篇博客，那么也会运行这段脚本了。
+
+预防方式: 转换生成js的符号。
+> &,<,>,",',/
+> 转译的脏活和累活可以交给一些第三方库，比方:`npm install xss`
