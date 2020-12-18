@@ -1,6 +1,8 @@
-const { exec } = require("../db/mysql");
+const { exec, escape } = require("../db/mysql");
 // 抽离路由中的逻辑维护 处理逻辑返回数据 仅仅处理业务
 const getList = (author, keyword) => {
+  author = escape(author)
+  keyword = escape(keyword)
   let sql = `select * from blogs where 1=1 `;
   if (author) {
     sql += `and author=${author} `;
@@ -13,6 +15,7 @@ const getList = (author, keyword) => {
 };
 
 const getDetail = (id) => {
+  id = escape(id)
   let sql = `select * from blogs where 1=1 `;
   if (id) {
     sql += `and id=${id} `;
@@ -48,6 +51,8 @@ const updateBlog = (id, blogData = {}) => {
 // 正常业务逻辑都是软删除 本质也就是更新status 下发数据时候根据status过滤 or 查询时候根据status查询
 // author假数据 只能删除自己的文章
 const delBlog = (id, author) => {
+  id = exec(id)
+  author = exec(author)
   let sql = `delete from blogs where 1=1 and author='${author}' `;
   if (id) {
     sql += `and id=${id} `;

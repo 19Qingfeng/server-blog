@@ -22,4 +22,6 @@ function exec(sql) {
 
 module.exports = {
   exec,
+  // mysql escape语句 进行将sql语句进行转译
+  escape: mysql.escape,
 };

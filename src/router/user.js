@@ -9,6 +9,7 @@ const handleUserRouter = (req, res) => {
   // 登陆接口
   if (method === "post" && path === "/api/user/login") {
     const { username, password } = req.body;
+    console.log(username,password,'username password')
     const result = login(username, password);
     return result.then((data) => {
       // 登陆成功之后 更新redis的值

@@ -32,3 +32,46 @@
 ### 目录流程
 
 www.js (createServer) => app.js (res,req Format) => router (split router module and method) => controller (handle data)
+
+### Nodejs 常见攻击防范
+
+1. sql 注入攻击。
+
+利用请求时携带的参数注入 sql 语句，比如
+
+```
+{
+    "username":"xixi2' -- ", // post请求中携带的 "' -- "为sql查询注释语句，这样就可以借助代码漏洞不需要密码进行登陆
+    "password":"mima123213asdfsafd"
+}
+
+{
+  "username":"xixi2; delete from users;" // 后果不堪设想
+}
+```
+
+预防方式很简单:
+
+使用 escape 函数进行执行
+
+```
+const { exec, escape } = require("../db/mysql");
+
+const login = (username, password) => {
+  username = escape(username)
+  password = escape(password)
+  let sql = `select username,realname from users where username=${username} and password=${password};`;
+  return exec(sql).then((data) => {
+    return data[0] || {}
+  });
+};
+
+module.exports = {
+  login,
+};
+
+```
+
+Tips:
+
+- sql 语句使用 scape()转译后，关键字比如 password，之前需要使用单引号`'password'`，现在就不需要了。

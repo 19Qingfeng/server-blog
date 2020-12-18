@@ -22,14 +22,15 @@ function access(log) {
   }
 }
 
-const errorWriteStream = createWriteStream('error.log')
+const errorWriteStream = createWriteStream("error.log");
 // 错误日志
 function errorLog(log) {
   if (process.env.NODE_ENV === "production") {
-    writeLog(accessWriteStream, log);
+    writeLog(errorWriteStream, log);
   }
 }
 
 module.exports = {
   access,
+  errorLog,
 };

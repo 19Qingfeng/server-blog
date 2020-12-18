@@ -19,9 +19,7 @@ let sum = 0;
 rl.on("line", (lineData) => {
   if (!lineData) return;
   sum++;
-  console.log(lineData,'\n')
   if (lineData.indexOf("Chrome") !== -1) {
-    console.log(lineData + "\n");
     chrome++;
   }
 });

@@ -26,7 +26,7 @@ const getPostData = (req) => {
       resolve({});
       return;
     }
-    if (req.headers["Content-Type"] !== "application/json;charset=UTF-8") {
+    if (req.headers["Content-Type"].indexOf('application/json') === -1) {
       resolve({});
       return;
     }
@@ -39,6 +39,7 @@ const getPostData = (req) => {
         resolve({});
         return;
       } else {
+        console.log(postData,'postData')
         resolve(JSON.parse(postData));
       }
     });
