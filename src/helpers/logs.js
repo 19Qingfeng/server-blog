@@ -12,10 +12,19 @@ function createWriteStream(filename) {
   });
 }
 
+// accessWriteStream没有调用end() 所以永远不会结束 来一个就会写一个
 const accessWriteStream = createWriteStream("access.log");
 
-// 书写访问日志
+// 访问日志
 function access(log) {
+  if (process.env.NODE_ENV === "production") {
+    writeLog(accessWriteStream, log);
+  }
+}
+
+const errorWriteStream = createWriteStream('error.log')
+// 错误日志
+function errorLog(log) {
   if (process.env.NODE_ENV === "production") {
     writeLog(accessWriteStream, log);
   }
