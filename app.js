@@ -11,7 +11,7 @@ const bodyparser = require('koa-bodyparser')
 // 日志
 const logger = require('koa-logger')
 
-const index = require('./routes/index')
+const blog = require('./routes/index')
 const users = require('./routes/users')
 
 // error handler
@@ -19,7 +19,8 @@ onerror(app)
 
 // middlewares
 
-// bodyparset和json中间件处理post请求中postData nodejs中req.on('data'),on('end')异步处理得到请求数据。
+// bodyparser和json中间件处理post请求中postData nodejs中req.on('data'),on('end')异步处理得到请求数据。
+// 经过bodyparser和json处理后，就可以通过ctx.request.body获取postData了.
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
@@ -47,7 +48,7 @@ app.use(async (ctx, next) => {
 
 // routes
 // allowedMethods 是针对路由没有匹配到的处理 找不到的路由处理
-app.use(index.routes(), index.allowedMethods())
+app.use(blog.routes(), blog.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 
 // error-handling
