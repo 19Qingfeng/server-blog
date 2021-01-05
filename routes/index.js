@@ -16,10 +16,17 @@ router.prefix("/api/blog");
 
 // ctx为context上下文 next 中间件函数next方法
 router.get("/list", async (ctx, next) => {
-  const query = ctx.query
+  console.log(ctx.session);
+  // 通过ctx.session访问session 并且已经存储在了redis中
+  if (!ctx.session.test) {
+    ctx.session.test = 0;
+  }
+  ctx.session.test++;
+  const query = ctx.query;
   ctx.body = {
     error: 0,
     query,
+    session: ctx.session,
     data: ["获取博客列表"],
   };
 });
