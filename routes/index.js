@@ -1,6 +1,11 @@
 // koa-router插件独立于koa koa-router独立处理koa-router(koa不处理路由)
 const router = require("koa-router")();
-const { getBlogList , getBlogDetail} = require("../controller/blog");
+const {
+  getBlogList,
+  getBlogDetail,
+  addNewBlog,
+  deleteBlog,
+} = require("../controller/blog");
 const { SuccessModel, ErrorModel } = require("../model/resModel");
 const { handlePromise } = require("../helpers/promise");
 
@@ -35,7 +40,31 @@ router.post("/detail", async (ctx, next) => {
     ctx.body = new ErrorModel(error);
     return;
   }
+  console.log(data);
   ctx.body = new SuccessModel(data);
+});
+
+router.post("/new", async (ctx, next) => {
+  const data = ctx.request.body;
+  // const author = ctx.session
+  const [error, id] = await handlePromise(addNewBlog(data));
+  if (error) {
+    ctx.body = new ErrorModel(error);
+    return;
+  }
+  ctx.body = new SuccessModel({ id });
+});
+
+router.delete("/delete", async (ctx, next) => {
+  const { id } = ctx.request.body;
+  const [error, boolean] = await handlePromise(deleteBlog(id));
+  if (error) {
+    ctx.body = new ErrorModel(error);
+    return;
+  }
+  ctx.body = new SuccessModel({
+    idDel: true,
+  });
 });
 
 router.get("/string", async (ctx, next) => {

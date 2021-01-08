@@ -11,6 +11,7 @@ sql.connect();
 const exec = async (sqlString) => {
   return new Promise((resolve, reject) => {
     sql.query(sqlString, (error, result) => {
+      console.log(error,'error')
       if (error) reject(error);
       resolve(result);
     });
