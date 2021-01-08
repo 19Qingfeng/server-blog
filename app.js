@@ -18,6 +18,9 @@ const redisStore = require("koa-redis");
 const blog = require("./routes/index");
 const users = require("./routes/users");
 
+// redis配置
+const { REDIS_CONFIG } = require("./conf/db");
+
 // error handler
 onerror(app);
 
@@ -57,8 +60,7 @@ app.use(
     },
     // 配置redis
     store: redisStore({
-      // 链接redis 暂时写死
-      all: "127.0.0.1:6379",
+      all: `${REDIS_CONFIG.host}:${REDIS_CONFIG.post}`,
     }),
   })
 );
