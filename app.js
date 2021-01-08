@@ -48,22 +48,30 @@ app.use(
   })
 );
 
-// 处理session
-// 增加session中存储加密密钥
-app.keys = ["wanghaoyu_"];
-// 配置session 配置完成后就可以通过ctx.session获得访问的session(解析之后的cookie)了。
-// 以及通过ctx.session.xxx=aaa 就可以通过在redis中存储xxx为aaa 不过是key是加密的
+
 
 /* 
   ctx.session.username = 'wanghaoyu'
   设置后 koa-generic-session就会在redis中对应的value存入一条数据(存在直接添加 不存在则新建一条数据)
-  key值是自动生成的加密串 value是cookie + ctx.session中自己设置的值
-  当每次用户访问时候 他会自动根据cookie中携带的key进行redis中去查找值
-  将redis中查询到对应的值 赋值给ctx.session进行处理
+  key值是自动生成的加密串 value是自己设置的值(这里默认配置了cookie内容，以及进行ctx.session赋值时也会存入)
+  当每次用户访问时候 他会自动根据cookie中携带的key(默认是koa:sess)进行redis中去查找值
+  将redis中查询到对应的值 赋值给ctx.session提供给我们使用
 
-  也就是说通过ctx.session赋值操作就会自动生成cookie并且存入redis中下发key
-  进行ctx.session取值时 这个中间件已经根据cookie中的key在redis中查出value保存在ctx.session中了。
+
+  ！ 赋值--存入redis--下发key到cookie中
+
+  也就是说通过ctx.session赋值操作它会自动生成key value存入redis中去，并且将key当作set-cookie进行下发。
+
+  ！读取--接口请求--通过cookie截取key--redis查找value--放入ctx.session中
+
+  当每次请求进入的时候，这个中间件已经根据配置中的前缀截取到cookie中的key(默认是koa:sess:后的key)然后去redis中查找value，找到之后将value放入ctx.session提供给我们使用。
 */
+
+// 处理session
+// 增加session中存储加密密钥
+// 配置session 配置完成后就可以通过ctx.session获得访问的session(解析之后的cookie key在redis中查找出来的value)了，也就是用户登陆相关redis存储信息。
+// 以及通过ctx.session.xxx=aaa 就可以通过在session中存储xxx为aaa,同时存储在redis中，同时下发key以cookie到客户端做持久化存储。 不过是key是加密的(加密待定)
+app.keys = ["wanghaoyu_"];
 
 app.use(
   session({
